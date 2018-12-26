@@ -1,81 +1,33 @@
 
-# coding: utf-8
-
-# In[1]:
-
-
 import tensorflow as tf;
 import sklearn.datasets;
 import pandas as pd
 import numpy as np
 
-
-# In[2]:
-
-
 iris_ds = sklearn.datasets.load_iris(return_X_y=False)
-
-
-# In[3]:
-
 
 iris_ds.target
 
-
-# In[4]:
-
-
 iris_data = pd.DataFrame(data=iris_ds.data,columns=iris_ds.feature_names)
 
-
-# In[5]:
-
-
 iris_data.head()
-
-
-# In[6]:
-
 
 from sklearn.model_selection import train_test_split
 import sklearn
 
-
-# In[7]:
-
-
 min_max_scaler = sklearn.preprocessing.MinMaxScaler()
 scaled_data = min_max_scaler.fit_transform(iris_data)
 
-
-# In[8]:
-
-
 from sklearn.preprocessing import OneHotEncoder
-
-
-# In[9]:
-
 
 encoder = OneHotEncoder(3)
 label = encoder.fit_transform(iris_ds.target.reshape(-1,1))
 label = label.todense()
 
 
-# In[10]:
-
-
 trainx,testx,trainy,testy = train_test_split(scaled_data,label)
 
-
-# In[11]:
-
-
 print (trainx.shape)
-
-
-# In[12]:
-
 
 x = tf.placeholder(tf.float32, shape=[None,4])
 y = tf.placeholder(tf.float32, shape=[None,3])
@@ -83,10 +35,6 @@ w1 = tf.get_variable(name='w1',dtype=tf.float32,shape=[5,4])
 w2 = tf.get_variable(name='w2',dtype=tf.float32,shape=(3,5))
 b1 = tf.get_variable(name='b1',dtype=tf.float32,shape=(5,1))
 b2 = tf.get_variable(name='b2',dtype=tf.float32,shape=(3,1))
-
-
-# In[13]:
-
 
 from tensorflow.contrib.keras import layers
 
@@ -97,29 +45,13 @@ def build_model(x):
     print (y2.shape)
     return y2
 
-
-# In[14]:
-
-
 # Applying build_model
 y_hat = build_model(x)
 
-
-# In[15]:
-
-
 accuracy = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(y,1),tf.argmax(y_hat,1)),tf.float64))
-
-
-# In[16]:
-
 
 entropy_loss = tf.losses.softmax_cross_entropy(logits=y_hat,onehot_labels=y)
 optimizer = tf.train.AdamOptimizer().minimize(entropy_loss)
-
-
-# In[17]:
-
 
 with tf.Session() as sess :
     sess.run(tf.global_variables_initializer())
